@@ -115,6 +115,7 @@ class TemplateManager
         // ----- USER PLACEHOLDERS TO BE REPLACED -----
 
         if(strpos($text, '[user:first_name]'))
+            $replacements['[user:first_name]'] = ucfirst(mb_strtolower($user->firstname));
 
 
         // -----
