@@ -69,4 +69,57 @@ class TemplateManager
 
         return $text;
     }
+
+    private function QuoteReplacement($text, array $data, array $replacements)
+    $quote = (isset($data['quote']) and $data['quote'] instanceof Quote) ? $data['quote'] : null;
+
+        if ($quote)
+        {
+
+            $quoteRepo  = QuoteRepository::getInstance()->getById($quote->id);
+            $site           = SiteRepository::getInstance()->getById($quote->siteId);
+            $destination    = DestinationRepository::getInstance()->getById($quote->destinationId);
+
+            // ----- QUOTE PLACEHOLDERS TO BE REPLACED -----
+
+            if(strpos($text, '[quote:destination_name]'))
+                $replacements['[quote:destination_name]'] = $destination->countryName;
+
+            if(strpos($text, '[quote:destination_link]'))
+                $replacements['[quote:destination_link]'] = $destination ? $site->url . '/' . $destination->countryName . '/quote/' . $quoteFromRepo->id : '';
+
+            if(strpos($text, '[quote:summary_html]'))
+                $replacements['[quote:summary_html]'] = Quote::renderHtml($quoteFromRepo);
+
+            if(strpos($text, '[quote:summary]'))
+                $replacements['[quote:summary]'] = Quote::renderText($quoteFromRepo);
+
+
+
+
+            // -----
+
+        }
+
+        return $replacements;
+    }
+
+
+    private function UserReplacement($text, array $data, array $replacements)
+    {
+
+        $appContext = ApplicationContext::getInstance();
+
+        $user  = (isset($data['user'])  and ($data['user']  instanceof User))  ? $data['user']  : $appContext->getCurrentUser();
+
+        // ----- USER PLACEHOLDERS TO BE REPLACED -----
+
+        if(strpos($text, '[user:first_name]'))
+            $replacements['[user:first_name]'] = ucfirst(mb_strtolower($user->firstname));
+
+
+        // -----
+
+        return $replacements;
+    }
 }
